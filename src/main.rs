@@ -1,3 +1,4 @@
+use chrono::Local;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::env;
@@ -5,8 +6,6 @@ use std::fs;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    // let task_desc = &args[2];
 
     #[derive(Serialize, Deserialize)]
     struct Task {
@@ -32,7 +31,20 @@ fn main() {
         new_id + 1
     }
 
-    fn add_task() {}
+    fn create_task(tasks: &Vec<Task>, new_desc: String) -> Task {
+        let newtask = Task {
+            id: create_id(tasks),
+            description: new_desc,
+            status: "todo".to_string(),
+            created_at: task_create_datetime(),
+            updated_at: task_create_datetime(),
+        };
+        newtask
+    }
+
+    fn task_create_datetime() -> String {
+        Local::now().format("%Y-%m-%dT%H:%M:%S").to_string()
+    }
 
     // switch case for different options. list, add, etc.
     match args[1].as_str() {
@@ -40,11 +52,16 @@ fn main() {
             for task in &tasks {
                 println!("{} | {} | {}", task.id, task.description, task.status);
             }
-            println!("suggest new id: {}", create_id(&tasks))
         }
-        //"add" => {
-        //    fs::write("tasks.json", Task).expect("Unable to write file");
-        //}
+        "add" => {
+            let new_desc = &args[2..].join(" ");
+            let new_task = create_task(&tasks, new_desc.to_string());
+            let mut updated_tasks = tasks;
+            updated_tasks.push(new_task);
+            let json =
+                serde_json::to_string_pretty(&updated_tasks).expect("failed to add task to list");
+            fs::write("tasks.json", json).expect("failed to write to file");
+        }
         _ => {
             println!("unknown command. try again")
         }
