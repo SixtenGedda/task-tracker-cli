@@ -46,21 +46,6 @@ fn main() {
         Local::now().format("%Y-%m-%dT%H:%M:%S").to_string()
     }
 
-    /*
-    fn update_task(tasks: Vec<Task>, update_id, task_update_desc) {
-        for task in tasks {
-            if task.id == update_id {
-                task.description = task_update_desc;
-            }
-        }
-        let mut updated_tasks = tasks;
-
-        let json = serde_json::to_string_pretty(&updated_tasks).expect("failed to update json task list")
-        fs::write("tasks.json", json).expect("failed to write to file")
-    }
-
-    */
-
     // switch case for different options. list, add, etc.
     match args[1].as_str() {
         "list" => {
@@ -71,10 +56,8 @@ fn main() {
         "add" => {
             let new_desc = &args[2..].join(" ");
             let new_task = create_task(&tasks, new_desc.to_string());
-            let mut updated_tasks = tasks;
-            updated_tasks.push(new_task);
-            let json =
-                serde_json::to_string_pretty(&updated_tasks).expect("failed to add task to list");
+            tasks.push(new_task);
+            let json = serde_json::to_string_pretty(&tasks).expect("failed to add task to list");
             fs::write("tasks.json", json).expect("failed to write to file");
         }
         "update" => {
