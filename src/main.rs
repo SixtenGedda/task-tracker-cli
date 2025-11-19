@@ -19,7 +19,7 @@ fn main() {
     // read file and then parse to json
     let contents = fs::read_to_string("tasks.json").expect("cant read file");
 
-    let tasks: Vec<Task> = serde_json::from_str(&contents).expect("could not parse JSON");
+    let mut tasks: Vec<Task> = serde_json::from_str(&contents).expect("could not parse JSON");
 
     fn create_id(tasks: &Vec<Task>) -> u32 {
         let mut new_id: u32 = 0;
@@ -46,6 +46,21 @@ fn main() {
         Local::now().format("%Y-%m-%dT%H:%M:%S").to_string()
     }
 
+    /*
+    fn update_task(tasks: Vec<Task>, update_id, task_update_desc) {
+        for task in tasks {
+            if task.id == update_id {
+                task.description = task_update_desc;
+            }
+        }
+        let mut updated_tasks = tasks;
+
+        let json = serde_json::to_string_pretty(&updated_tasks).expect("failed to update json task list")
+        fs::write("tasks.json", json).expect("failed to write to file")
+    }
+
+    */
+
     // switch case for different options. list, add, etc.
     match args[1].as_str() {
         "list" => {
@@ -60,6 +75,18 @@ fn main() {
             updated_tasks.push(new_task);
             let json =
                 serde_json::to_string_pretty(&updated_tasks).expect("failed to add task to list");
+            fs::write("tasks.json", json).expect("failed to write to file");
+        }
+        "update" => {
+            let task_update_desc: &String = &args[3];
+            let update_id: u32 = args[2].parse().unwrap();
+            for task in &mut tasks {
+                if task.id == update_id {
+                    task.description = task_update_desc.to_string();
+                }
+            }
+            let json =
+                serde_json::to_string_pretty(&tasks).expect("failed to update json task list");
             fs::write("tasks.json", json).expect("failed to write to file");
         }
         _ => {
