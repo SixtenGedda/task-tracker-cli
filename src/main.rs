@@ -49,6 +49,9 @@ fn main() {
     // switch case for different options. list, add, etc.
     match args[1].as_str() {
         "list" => {
+            if args.len() > 2 {
+                tasks.retain(|task| task.status == args[2]);
+            }
             for task in &tasks {
                 println!("{} | {} | {}", task.id, task.description, task.status);
             }
@@ -62,7 +65,7 @@ fn main() {
         }
         "update" => {
             let task_update_desc: &String = &args[3];
-            let update_id: u32 = args[2].parse().unwrap();
+            let update_id: u32 = args[2].parse().expect("Task ID needs to be a number");
             for task in &mut tasks {
                 if task.id == update_id {
                     task.description = task_update_desc.to_string();
@@ -75,7 +78,7 @@ fn main() {
             fs::write("tasks.json", json).expect("failed to write to file");
         }
         "remove" => {
-            let delete_id: u32 = args[2].parse().unwrap();
+            let delete_id: u32 = args[2].parse().expect("Task ID needs to be a number");
             tasks.retain(|task| task.id != delete_id);
             let json =
                 serde_json::to_string_pretty(&tasks).expect("failed to update json task list");
