@@ -66,8 +66,17 @@ fn main() {
             for task in &mut tasks {
                 if task.id == update_id {
                     task.description = task_update_desc.to_string();
+                    task.updated_at = task_create_datetime()
                 }
+                break;
             }
+            let json =
+                serde_json::to_string_pretty(&tasks).expect("failed to update json task list");
+            fs::write("tasks.json", json).expect("failed to write to file");
+        }
+        "remove" => {
+            let delete_id: u32 = args[2].parse().unwrap();
+            tasks.retain(|task| task.id != delete_id);
             let json =
                 serde_json::to_string_pretty(&tasks).expect("failed to update json task list");
             fs::write("tasks.json", json).expect("failed to write to file");
@@ -75,5 +84,20 @@ fn main() {
         _ => {
             println!("unknown command. try again")
         }
+    }
+}
+
+pub fn add(left: u64, right: u64) -> u64 {
+    left + right
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_task() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
     }
 }
