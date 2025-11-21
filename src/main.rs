@@ -49,11 +49,10 @@ fn main() {
     // switch case for different options. list, add, etc.
     match args[1].as_str() {
         "list" => {
-            if args.len() > 2 {
-                tasks.retain(|task| task.status == args[2]);
-            }
             for task in &tasks {
-                println!("{} | {} | {}", task.id, task.description, task.status);
+                if args.len() <= 2 || args[2] == task.status {
+                    println!("{} | {} | {}", task.id, task.description, task.status);
+                }
             }
         }
         "add" => {
