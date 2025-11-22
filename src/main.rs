@@ -4,52 +4,55 @@ use serde_json;
 use std::env;
 use std::fs;
 
+#[derive(Serialize, Deserialize)]
+struct Task {
+    id: u32,
+    description: String,
+    status: String,
+    created_at: String,
+    updated_at: String,
+}
+
+fn create_id(tasks: &Vec<Task>) -> u32 {
+    let mut new_id: u32 = 0;
+    for task in tasks {
+        if task.id > new_id {
+            new_id = task.id;
+        }
+    }
+    new_id + 1
+}
+
+fn create_task(tasks: &Vec<Task>, new_desc: String) -> Task {
+    let newtask = Task {
+        id: create_id(tasks),
+        description: new_desc,
+        status: "todo".to_string(),
+        created_at: task_create_datetime(),
+        updated_at: task_create_datetime(),
+    };
+    newtask
+}
+
+fn task_create_datetime() -> String {
+    Local::now().format("%Y-%m-%dT%H:%M:%S").to_string()
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    #[derive(Serialize, Deserialize)]
-    struct Task {
-        id: u32,
-        description: String,
-        status: String,
-        created_at: String,
-        updated_at: String,
-    }
 
     // read file and then parse to json
     let contents = fs::read_to_string("tasks.json").expect("cant read file");
 
     let mut tasks: Vec<Task> = serde_json::from_str(&contents).expect("could not parse JSON");
 
-    fn create_id(tasks: &Vec<Task>) -> u32 {
-        let mut new_id: u32 = 0;
-        for task in tasks {
-            if task.id > new_id {
-                new_id = task.id;
-            }
-        }
-        new_id + 1
-    }
-
-    fn create_task(tasks: &Vec<Task>, new_desc: String) -> Task {
-        let newtask = Task {
-            id: create_id(tasks),
-            description: new_desc,
-            status: "todo".to_string(),
-            created_at: task_create_datetime(),
-            updated_at: task_create_datetime(),
-        };
-        newtask
-    }
-
-    fn task_create_datetime() -> String {
-        Local::now().format("%Y-%m-%dT%H:%M:%S").to_string()
-    }
-
-    // switch case for different options. list, add, etc.
+    // match for different options. list, add, etc.
     match args[1].as_str() {
         "list" => {
             for task in &tasks {
+                /*check if there are more than one
+                argument before trying to access
+                index 2 */
                 if args.len() <= 2 || args[2] == task.status {
                     println!("{} | {} | {}", task.id, task.description, task.status);
                 }
@@ -70,7 +73,6 @@ fn main() {
                     task.description = task_update_desc.to_string();
                     task.updated_at = task_create_datetime()
                 }
-                break;
             }
             let json =
                 serde_json::to_string_pretty(&tasks).expect("failed to update json task list");
