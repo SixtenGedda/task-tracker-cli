@@ -7,11 +7,14 @@ Simple command line task tracker written in rust.
 - List tasks by status
 - Tasks stored in JSON file
 
-## How to run 
+## How to build 
 ```bash
-cargo run -- {ARGUMENT HERE}
+cargo build --release
 
 ```
+
+## How to run
+
 ### Update a task
 ```bash
 task-tracker-cli update 1 "Buy groceries and cook dinner"
