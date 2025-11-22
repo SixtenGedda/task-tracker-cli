@@ -44,6 +44,11 @@ fn save_tasks(tasks: &Vec<Task>) {
 fn main() {
     let args: Vec<String> = env::args().collect();
 
+    // create file if it doesnt exist
+    if !std::path::Path::new("tasks.json").exists() {
+        fs::write("tasks.json", "[]").expect("Could not create tasks.json");
+    }
+
     // read file and then parse to json
     let contents = fs::read_to_string("tasks.json").expect("cant read file");
 
