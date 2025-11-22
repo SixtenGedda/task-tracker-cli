@@ -9,7 +9,6 @@ Simple command line task tracker written in rust.
 
 ## How to run 
 ```bash
-```bash
 cargo run -- {ARGUMENT HERE}
 
 ```
