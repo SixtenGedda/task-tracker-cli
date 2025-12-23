@@ -23,13 +23,7 @@ fn create_task(tasks: &Vec<Task>, new_desc: String) -> Task {
 }
 
 fn create_id(tasks: &Vec<Task>) -> u32 {
-    let mut new_id: u32 = 0;
-    for task in tasks {
-        if task.id > new_id {
-            new_id = task.id;
-        }
-    }
-    new_id + 1
+    tasks.iter().map(|t| t.id + 1).max().unwrap_or(0)
 }
 
 fn task_create_datetime() -> String {
@@ -67,17 +61,17 @@ fn main() {
             }
         }
         "add" => {
-            let new_desc = &args[2..].join(" ");
-            let new_task = create_task(&tasks, new_desc.clone());
+            let new_desc = args[2..].join(" ");
+            let new_task = create_task(&tasks, new_desc);
             tasks.push(new_task);
             save_tasks(&tasks);
         }
         "update" => {
-            let task_update_desc: &String = &args[3..].join(" ");
+            let task_update_desc: String = args[3..].join(" ");
             let update_id: u32 = args[2].parse().expect("Task ID needs to be a number");
             for task in &mut tasks {
                 if task.id == update_id {
-                    task.description = task_update_desc.clone();
+                    task.description = task_update_desc;
                     task.updated_at = task_create_datetime();
                     break;
                 }
