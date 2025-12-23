@@ -1,5 +1,5 @@
 # Task Tracker CLI 
-Simple command line task tracker written in rust.
+Simple command line task tracker written in rust. Part of the [roadmap.sh](https://roadmap.sh/projects/task-tracker) projects.
 
 ## Features
 
